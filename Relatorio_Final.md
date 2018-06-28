@@ -12,7 +12,7 @@ O principal objetivo do nosso trabalho é esconder mensagens em imagens, de modo
 O problema, portanto, é derivado da área de segurança. Note que este trabalho trabalha tanto com a criptografia como a 
 esteganografia, visto que o objetivo da primeira é ocultar o significado da mensagem, e a segunda é ocultar a existência desta.
 
-As imagens utilizadas como teste estão disponiveis neste [site](https://www.noticiasaominuto.com/lifestyle/944129/conheca-as-mais-belas-paisagens-naturais-do-brasil).
+As imagens utilizadas como teste estão disponiveis neste [site](https://www.noticiasaominuto.com/lifestyle/944129/conheca-as-mais-belas-paisagens-naturais-do-brasil) e neste [site](https://br.nacaodamusica.com/posts/trilha-sonora-deadpool/).
 
 ## Desenvolvimento
 
