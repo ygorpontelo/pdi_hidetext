@@ -191,7 +191,7 @@ def hideText(text, image, key, threshold):
 		print("Caracteres suportados pela imagem com a densidade atual:", textPos)
 		print("Caracteres no seu texto:", len(text))
 	
-	return resultImage
+	return resultImage, writeSpots
 
 def getCapacity(image, threshold):
 	writeSpots = writeMap(image, threshold)
@@ -251,6 +251,10 @@ def getText(image, key):
 	
 	return resultString
 
+# Compara as imgs e retorna diferenca
+def compara(imgReferencia, imgCriada):
+    return (np.sqrt(((imgReferencia - imgCriada) ** 2).mean()))
+
 # Le a entrada e carrega as imagens
 while True:
 	print('1) Ler texto codificado\n2) Codificar mensagem\n', end='')
@@ -309,8 +313,17 @@ else:
 	print()	# Pula linha
 
 	textE = encriptador.encrypt(text).decode("utf-8")
-	hiddenImage = hideText(textE, image, key, threshold)
+	hiddenImage, writeSpots = hideText(textE, image, key, threshold)
 	imageio.imwrite('result.png', hiddenImage)
 
 	print('Imagem resultante salva em \"result.png\"')
 	print('Texto codificado com sucesso!')
+	print('RMSE: %lf' % compara(image, hiddenImage));
+	plt.subplot(311).set_title('Imagem Original')
+	plt.imshow(image)
+	plt.subplot(312).set_title('Imagem Criada')
+	plt.imshow(hiddenImage)
+	plt.subplot(313).set_title('Regiões que podiam ser sobrescritas')
+	plt.imshow(writeSpots)
+	plt.tight_layout()
+	plt.show()
