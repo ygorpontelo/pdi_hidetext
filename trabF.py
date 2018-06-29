@@ -16,20 +16,23 @@ import sys
 class AESCipher(object):
     def __init__(self, key): 
         self.bs = 32
-        self.key = hashlib.sha256(key.encode()).digest()
+        self.key = hashlib.sha256(key.encode()).digest() # Padrao de 256
 
+	# Metodo para encriptar
     def encrypt(self, raw):
         raw = self._pad(raw)
         iv = Random.new().read(AES.block_size)
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
         return base64.b64encode(iv + cipher.encrypt(raw.encode('utf-8')))
 
+	# Metodo para desencriptar
     def decrypt(self, enc):
         enc = base64.b64decode(enc)
         iv = enc[:AES.block_size]
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
         return self._unpad(cipher.decrypt(enc[AES.block_size:])).decode('utf-8')
 
+	# Formacoes de entrada
     def _pad(self, s):
         return s + (self.bs - len(s) % self.bs) * chr(self.bs - len(s) % self.bs)
 
@@ -41,6 +44,7 @@ def constColorUnravelIndex(pxNum, imgShape):
 	invIndex = np.unravel_index(pxNum, (imgShape[2], imgShape[0], imgShape[1]))
 	return (invIndex[1], invIndex[2], invIndex[0])
 	
+# Convolui
 def convolve(img, filter):
 	f = np.zeros((img.shape[0], img.shape[1]))	
 	f[:filter.shape[0],:filter.shape[1]] = filter
@@ -52,6 +56,7 @@ def convolve(img, filter):
 	
 	return res
 
+# Cria o filtro com as regioes
 def writeMap(image, threshold):
 	edgeDetectionKernel = np.array([[-1,-1,-1],[-1,8,-1],[-1,-1,-1]])
 	edgeImage = convolve(image, edgeDetectionKernel)
@@ -78,7 +83,8 @@ def writeMap(image, threshold):
 			seqStart = pxNum
 	
 	return blurrRad
-	
+
+# Escreve no pixel encontrado
 def usePixel(pxNum, writeSpots):
 	if(writeSpots[constColorUnravelIndex(pxNum, writeSpots.shape)] != 0):
 		currPx = pxNum
@@ -91,12 +97,14 @@ def usePixel(pxNum, writeSpots):
 			writeSpots[constColorUnravelIndex(currPx, writeSpots.shape)] = 0
 			currPx -= 1
 			
+# Esconder o texto
 def hideText(text, image, key, threshold):
 	resultImage = image.copy()
 
 	imgSize = image.shape[0] * image.shape[1] * image.shape[2]
 	random.seed(key)
 	originPixels = []
+	# Faz o mapa de onde escrever
 	writeSpots = writeMap(image, threshold)
 	for i in range(16):
 		px = random.randint(0, imgSize)
@@ -186,6 +194,7 @@ def hideText(text, image, key, threshold):
 			resultImage[constColorUnravelIndex(currPx+i, image.shape)] &= 0xf0
 			resultImage[constColorUnravelIndex(currPx+i, image.shape)] |= ((jumpAmount >> 4*i) & 0x0f)
 	
+	# Verifica se o texto nao coube na imagem
 	if(textPos < len(text)):
 		print("Esse texto não cabe nessa imagem com a densidade atual")
 		print("Caracteres suportados pela imagem com a densidade atual:", textPos)
@@ -193,6 +202,7 @@ def hideText(text, image, key, threshold):
 	
 	return resultImage, writeSpots
 
+# Estima a capacidade de armazenamento da img
 def getCapacity(image, threshold):
 	writeSpots = writeMap(image, threshold)
 	cap = 0
@@ -206,6 +216,7 @@ def getCapacity(image, threshold):
 			cap -= 7
 	return int((cap*0.9)/2)
 		
+# Recupera texto dentro da img
 def getText(image, key):
 	imgSize = image.shape[0] * image.shape[1] * image.shape[2]
 	random.seed(key)
@@ -318,7 +329,8 @@ else:
 
 	print('Imagem resultante salva em \"result.png\"')
 	print('Texto codificado com sucesso!')
-	print('RMSE: %lf' % compara(image, hiddenImage));
+	print('RMSE: %lf' % compara(image, hiddenImage)); 	# Exibe o erro 
+	# Mostra comparacoes
 	plt.subplot(311).set_title('Imagem Original')
 	plt.imshow(image)
 	plt.subplot(312).set_title('Imagem Criada')
